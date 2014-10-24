@@ -1,7 +1,10 @@
 <section id='status-bar'>
-  {{#each part in parts}}
-    {{render 'part-status' part}}
-  {{/each}}
+  <div class="action-bar"></div>
+  <div class="part-statuses">
+    {{#each part in parts}}
+      {{render 'part-status' part}}
+    {{/each}}
+  </div>
 </section>
 <section id='piano-roll'>
   <section id='grid'>
