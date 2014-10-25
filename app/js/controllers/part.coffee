@@ -1,13 +1,10 @@
 Seq25.PartController = Ember.ObjectController.extend
   pitches: (-> Seq25.Pitch.all).property('model')
-  needs: 'transport'
-  transport: Em.computed.alias('controllers.transport')
   quant: 1
 
   selectedNotes: []
 
   beats: (-> [1..@get('beat_count')] ).property('beat_count')
-  parts: Em.computed.alias('controllers.transport.parts')
 
   partSaver: ( ->
     @get('model').save()

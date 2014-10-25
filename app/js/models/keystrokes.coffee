@@ -1,3 +1,8 @@
+Seq25.CurrentKeystrokes = Ember.Object.extend
+  numbers: ""
+  parts: ""
+  characters: (-> @get('numbers') + @get('parts')).property("numbers", "parts")
+
 _MAP =
   8: 'backspace',
   32: 'space',
@@ -65,14 +70,19 @@ class Seq25.NumStack
 
   push: (num) ->
     @stack.push(num)
+    @sync()
 
   drain: () ->
-    if @stack.length is 0
-      num = 1
+    num = if @stack.length is 0
+      1
     else
-      num = parseInt(@stack.join(''))
+      parseInt(@stack.join(''))
     @stack = []
+    @sync()
     num
+
+  sync: () ->
+    Seq25.Keystrokes.current.set('numbers', @stack.join(''))
 
 Seq25.numStack = new Seq25.NumStack()
 
@@ -81,10 +91,15 @@ class Seq25.PartStack
 
   push: (parkKey) ->
     @stack = parkKey
+    @sync()
 
   drain: () ->
     part = @stack.toUpperCase()
     @stack = ''
+    @sync()
     part
+
+  sync: ->
+    Seq25.Keystrokes.current.set('parts', @stack)
 
 Seq25.partStack = new Seq25.PartStack()

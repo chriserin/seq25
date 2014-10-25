@@ -1,0 +1,8 @@
+<section id='status-bar'>
+  <div class="action-bar">{{characters}}</div>
+  <div class="part-statuses">
+    {{#each part in parts}}
+      {{render 'part-status' part}}
+    {{/each}}
+  </div>
+</section>

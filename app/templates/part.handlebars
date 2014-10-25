@@ -1,11 +1,4 @@
-<section id='status-bar'>
-  <div class="action-bar"></div>
-  <div class="part-statuses">
-    {{#each part in parts}}
-      {{render 'part-status' part}}
-    {{/each}}
-  </div>
-</section>
+{{render 'song-status' parts}}
 <section id='piano-roll'>
   <section id='grid'>
     {{play-bar part=this transport=transport}}
