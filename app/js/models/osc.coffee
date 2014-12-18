@@ -21,10 +21,16 @@ Seq25.Osc = Ember.Object.extend
     @oscillator.start 0
 
     @noise = context.createScriptProcessor(1 << 14)
-    @noise.onaudioprocess = (event)->
+    @noise.onaudioprocess = (event)=>
       for channel in [0, 1]
         out = event.outputBuffer.getChannelData channel
-        out[i] = Math.random() for i in [0..event.outputBuffer.length]
+        num = @get('pitch.number')
+        limiter = (num - 21) / 87
+        for i in [0..event.outputBuffer.length]
+          if Math.random() > limiter
+            out[i] = 0.1 + (limiter * Math.random())
+          else
+            out[i] = 0.8 + (0.2 * Math.random())
 
     @_super()
 
