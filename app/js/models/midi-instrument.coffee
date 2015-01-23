@@ -17,5 +17,4 @@ Seq25.MidiInstrument = DS.Model.extend
       if note
         midi.stop note.get('pitch.number'), channel
       else
-        for pitch in Seq25.Pitch.all
-          midi.stop pitch, channel
+        midi.stopAllNotes channel

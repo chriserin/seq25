@@ -4,12 +4,15 @@ class Seq25.Midi
   play: (pitch, velocity, channel, start=0, duration)->
     now = performance.now()
     noteOnTime = now + (start * 1e3)
-    @sendOnAt(pitch, velocity, channel, noteOnTime)
+    @sendOnAt(pitch, velocity, channel - 1, noteOnTime)
     noteOffTime = now + ((start + duration) * 1e3)
-    @sendOffAt(pitch, channel, noteOffTime) if duration
+    @sendOffAt(pitch, channel - 1, noteOffTime) if duration
 
   stop: (pitch, channel)->
-    @sendOffAt(pitch, channel, 0)
+    @sendOffAt(pitch, channel - 1, 0)
+
+  stopAllNotes: (channel)->
+    @sendAllNotesOff(channel - 1, 0)
 
   sendOnAt: (pitch, velocity, channel, timeFromNow)->
     ON = 0x90 ^ channel
@@ -19,13 +22,30 @@ class Seq25.Midi
     OFF = 0x80 ^ channel
     @output.send [OFF, pitch, 0x7f], timeFromNow
 
+  sendAllNotesOff: (channel, timeFromNow) ->
+    AUX = 0xB0 ^ channel
+    @output.send [AUX, 123, 0], timeFromNow
+
 connectionPromise = null
 Seq25.Midi.connect = ->
   connectionPromise ||= new Em.RSVP.Promise (resolve, reject) ->
     navigator.requestMIDIAccess()
     .then (access)->
-      if output = access.outputs.values().next().value
-        resolve(new Seq25.Midi(output))
+      tempOutput = null
+      iterator = access.outputs.values()
+      midiOutput = iterator.next()
+      while(midiOutput.done == false)
+        if midiOutput.value.name.match(/router/)
+          console.log(midiOutput.value.name)
+          tempOutput = midiOutput
+          break
+        else
+          tempOutput = midiOutput
+        midiOutput = iterator.next()
+
+      if tempOutput
+        debugger
+        resolve(new Seq25.Midi(tempOutput.value))
       else
         console.log 'connected, but no outputs'
         reject()
